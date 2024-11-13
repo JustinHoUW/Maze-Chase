@@ -1,7 +1,7 @@
 import pymaze as maze, random
 import sys
 from pymaze import COLOR  # Ensure COLOR is correctly imported
-from GameSearch import GameSearch  # Import Game Search class
+from GameSearch import GameTree  # Import Game Search class
 
 
 eCount = 0
@@ -54,6 +54,17 @@ if (player == 1):
 else:
     # Enable keyboard move for max (human)
     m.enableArrowKey(max)
+
+if size == 10:
+    search = GameTree(m, (1, 1), (9, 9))
+else:
+    search = GameTree(m, (1, 1), (19, 19))
+
+if size == 10:
+    build_tree = GameTree.build_game_tree((1, 1), (9, 9), 0, True)
+else:
+    build_tree = GameTree.build_game_tree((1, 1), (19, 19), 0, True)
+
 
 
 # Trace the final path of the second agent
