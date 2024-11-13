@@ -1,26 +1,8 @@
 import pymaze as maze, random
+import sys
 from pymaze import COLOR  # Ensure COLOR is correctly imported
+from GameSearch import GameSearch  # Import Game Search class
 
-x = random.randint(1, 20) 
-y = random.randint(1, 30)
-
-m = maze.maze(20, 30)  # Create a light-themed maze of size 20x30
-m.CreateMaze(x, y, theme=maze.COLOR.light)  # Random goal, light theme
-
-xagent = random.randint(1, 20) 
-yagent = random.randint(1, 30)
-a = maze.agent(m, xagent, yagent, shape='arrow', footprints=True, color=COLOR.yellow)  # Agent at (xagent, yagent)
-
-# Generate a random start point for a second agent
-x1 = random.randint(1, 20)
-y1 = random.randint(1, 30)
-
-# Regenerate random numbers to avoid overlap with goal and first agent
-while (x1 == x and y1 == y) or (x1 == xagent and y1 == yagent):
-    x1 = random.randint(1, 20)
-    y1 = random.randint(1, 30)
-
-b = maze.agent(m, x1, y1, shape='square', footprints=True, color=COLOR.red)  # Second agent
 
 eCount = 0
 nCount = 0
@@ -28,48 +10,57 @@ sCount = 0
 wCount = 0
 path = ""  # Use String to trace path
 
-# Ensure agent moves 2-3 steps in every direction
-while eCount < 1 or nCount < 1 or sCount < 1 or wCount < 1:
-    getRandom = random.randint(1, 4)
+# Capture command-line inputs with ChatGPT
+print(f"Arguments received: {sys.argv}")
 
-    # Move East
-    if getRandom == 1 and eCount == 0:
-        steps = random.randint(2, 3)  # Randomize steps between 2 and 3
-        for _ in range(steps):
-            if x1 + 1 < 20:  # Check boundary to avoid moving outside maze
-                x1 += 1  # Move east
-                path += 'E'
-        eCount += 1
+if len(sys.argv) < 3:
+    print("Usage: MazeRunner.py [player] [searchmethod] [size]")
+    sys.exit(1)
 
-    # Move North
-    elif getRandom == 2 and nCount == 0:
-        steps = random.randint(2, 3)  # Randomize steps between 2 and 3
-        for _ in range(steps):
-            if y1 + 1 < 30:  # Check boundary to avoid moving outside maze
-                y1 += 1  # Move north
-                path += 'N'
-        nCount += 1
+player = int(sys.argv[1])  # player
+search_method = (sys.argv[2])  # searchmethod
+size = int(sys.argv[3])  # size
 
-    # Move South
-    elif getRandom == 3 and sCount == 0:
-        steps = random.randint(2, 3)  # Randomize steps between 2 and 3
-        for _ in range(steps):
-            if y1 - 1 > 0:  # Check boundary to avoid moving outside maze
-                y1 -= 1  # Move south
-                path += 'S'
-        sCount += 1
+print("MazeRunner.py", player, search_method, size)
 
-    # Move West
-    elif getRandom == 4 and wCount == 0:
-        steps = random.randint(2, 3)  # Randomize steps between 2 and 3
-        for _ in range(steps):
-            if x1 - 1 > 0:  # Check boundary to avoid moving outside maze
-                x1 -= 1  # Move west
-                path += 'W'
-        wCount += 1
+
+if size == 20: # Create maze size of 20 x 30
+    x = random.randint(1, size) 
+    y = random.randint(1, 30)
+    m = maze.maze(size, 30)  
+    m.CreateMaze(x, y, theme=maze.COLOR.dark, loopPercent=100)  # Random goal, dark theme
+    randrow1 = random.randint(1, size) 
+    randcoll1 = random.randint(1, 30)
+    # Player 1
+    min = maze.agent(m, 1, 1, shape='square', footprints=True, color=COLOR.red)  # Agent at (xagent, yagent)
+    # Player 2
+    max = maze.agent(m, shape='arrow', footprints=True, color=COLOR.green)  # Agent at (xagent, yagent)
+
+else: # Create maze size of 10 x 10
+    x = random.randint(1, size) 
+    y = random.randint(1, size)
+    m = maze.maze(size, size)  
+    m.CreateMaze(x, y, theme=maze.COLOR.dark, loopPercent=100)  # Random goal, dark theme
+    randrow1 = random.randint(10, 10) 
+    randcoll1 = random.randint(10, 10)
+    # Player 1
+    min = maze.agent(m, 1, 1, shape='square', footprints=True, color=COLOR.red)  # Agent at (xagent, yagent)
+    # Player 2
+    max = maze.agent(m, shape='arrow', footprints=True, color=COLOR.green)  # Agent at (xagent, yagent)
+
+if (player == 1):
+    # Enable keyboard move for min (human)
+    m.enableArrowKey(min)
+else:
+    # Enable keyboard move for max (human)
+    m.enableArrowKey(max)
+
 
 # Trace the final path of the second agent
-m.tracePath({b: path}, delay=2100, showMarked=True)
+# m.tracePath({b: path}, delay=2100, showMarked=True)
 
 m.run()
 print(m.maze_map)
+
+# Capture command-line inputs with ChatGPT
+# print(f"Max move: {sys.argv}")
